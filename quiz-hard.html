@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hard Quiz Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .option.correct {
+            background-color: #4ade80 !important;
+            color: white !important;
+        }
+        .option.wrong {
+            background-color: #f87171 !important;
+            color: white !important;
+        }
+        .progress-bar {
+            transition: width 0.4s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-red-50 to-orange-50 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md mx-auto">
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden" data-aos="fade-up">
+            <!-- Quiz Header -->
+            <div class="bg-gradient-to-r from-red-500 to-orange-600 p-6 text-center">
+                <h1 class="text-2xl font-bold text-white">Hard Quiz</h1>
+                <div class="mt-2 flex items-center justify-center">
+                    <i data-feather="award" class="text-yellow-300 mr-2"></i>
+                    <span class="text-white font-medium">Expert level challenge</span>
+                </div>
+            </div>
+
+            <!-- Quiz Content -->
+            <div class="p-6">
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-medium text-gray-600" id="progress-text">Question 1 of 5</span>
+                        <span class="text-sm font-medium text-gray-600" id="score">Score: 0</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="progress-bar bg-red-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Question Container -->
+                <div id="question-container">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4" id="question">Loading question...</h2>
+                    <div class="space-y-3" id="options-container">
+                        <!-- Options will be inserted here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Results Container (Hidden by default) -->
+                <div id="results-container" class="hidden text-center py-8">
+                    <div class="mb-6">
+                        <i data-feather="award" class="w-16 h-16 mx-auto text-red-500"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2" id="result-title">Quiz Completed!</h2>
+                    <p class="text-gray-600 mb-4">You scored <span class="font-bold text-red-600" id="final-score">0</span> out of <span id="total-questions">5</span></p>
+                    <p class="text-gray-700 mb-6" id="result-message">Keep practicing to improve your score!</p>
+                    <button id="restart-btn" class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-6 rounded-lg transition duration-300 mr-2">
+                        Try Again
+                    </button>
+                    <button id="home-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
+                        Back to Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data for hard level (5 questions)
+        const quizData = [
+            {
+                question: "What is the capital of Bhutan?",
+                options: ["Kathmandu", "Thimphu", "Dhaka", "Male"],
+                correctAnswer: 1
+            },
+            {
+                question: "Which element has the highest melting point?",
+                options: ["Tungsten", "Carbon", "Osmium", "Tantalum"],
+                correctAnswer: 1
+            },
+            {
+                question: "Who wrote 'The Origin of Species'?",
+                options: ["Charles Darwin", "Albert Einstein", "Isaac Newton", "Stephen Hawking"],
+                correctAnswer: 0
+            },
+            {
+                question: "What is the largest internal organ in the human body?",
+                options: ["Liver", "Brain", "Skin", "Heart"],
+                correctAnswer: 0
+            },
+            {
+                question: "Which planet has the most moons in our solar system?",
+                options: ["Jupiter", "Saturn", "Uranus", "Neptune"],
+                correctAnswer: 1
+            }
+        ];
+
+        // DOM Elements
+        const questionElement = document.getElementById('question');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const scoreElement = document.getElementById('score');
+        const progressBar = document.querySelector('.progress-bar');
+        const questionContainer = document.getElementById('question-container');
+        const resultsContainer = document.getElementById('results-container');
+        const finalScoreElement = document.getElementById('final-score');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const resultTitle = document.getElementById('result-title');
+        const resultMessage = document.getElementById('result-message');
+        const restartBtn = document.getElementById('restart-btn');
+        const homeBtn = document.getElementById('home-btn');
+
+        // Quiz state
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        // Initialize quiz
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            showQuestion();
+            AOS.init();
+            feather.replace();
+        }
+
+        // Display current question
+        function showQuestion() {
+            resetState();
+            const currentQuestion = quizData[currentQuestionIndex];
+            const questionNo = currentQuestionIndex + 1;
+            
+            questionElement.textContent = currentQuestion.question;
+            progressText.textContent = `Question ${questionNo} of ${quizData.length}`;
+            scoreElement.textContent = `Score: ${score}`;
+            progressBar.style.width = `${(currentQuestionIndex / quizData.length) * 100}%`;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option', 'w-full', 'text-left', 'p-3', 'rounded-lg', 'border', 'border-gray-200', 'hover:border-red-300', 'transition', 'duration-300', 'mb-2', 'bg-white', 'text-gray-800');
+                button.addEventListener('click', () => selectAnswer(index));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // Reset question state
+        function resetState() {
+            answered = false;
+            while (optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+            // Reset option buttons styling if coming back from wrong answer
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('correct', 'wrong');
+            });
+        }
+
+        // Handle answer selection
+        function selectAnswer(index) {
+            if (answered) return;
+            answered = true;
+            
+            // Remove any existing modal
+            const existingModal = document.getElementById('try-again-modal');
+            if (existingModal) existingModal.remove();
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const options = document.querySelectorAll('.option');
+            const selectedOption = options[index];
+
+            if (index === currentQuestion.correctAnswer) {
+                selectedOption.classList.add('correct');
+                score++;
+                scoreElement.textContent = `Score: ${score}`;
+            } else {
+                selectedOption.classList.add('wrong');
+                options[currentQuestion.correctAnswer].classList.add('correct');
+
+                // Create modal with animated icon
+                const modal = document.createElement('div');
+                modal.id = 'try-again-modal';
+                modal.className = 'fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center">
+                        <div class="flex flex-col items-center mb-4">
+                            <span class="inline-block animate-bounce">
+                                <i data-feather="x-circle" class="w-10 h-10 text-red-400 mb-2"></i>
+                            </span>
+                            <div class="text-red-500 font-bold text-lg">Oops! That's not correct.</div>
+                        </div>
+                        <p class="text-gray-700 mb-4">Don't worry, you can try this question again!</p>
+                        <button id="try-again-btn" class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition duration-200">Try Again</button>
+                    </div>
+                `;
+                // Replace feather icons in modal
+                setTimeout(() => feather.replace(), 0);
+                document.body.appendChild(modal);
+
+                // Handle Try Again button
+                document.getElementById('try-again-btn').onclick = function() {
+                    modal.remove();
+                    resetState();
+                    showQuestion();
+                };
+                return; // Don't proceed to next question
+            }
+            
+            // Move to next question after delay only if answer was correct
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizData.length) {
+                    showQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        // Show final results
+        function showResults() {
+            questionContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            progressBar.style.width = '100%';
+            
+            finalScoreElement.textContent = score;
+            totalQuestionsElement.textContent = quizData.length;
+            
+            // Save progress to localStorage
+            const percentage = (score / quizData.length) * 100;
+            localStorage.setItem('quiz-hard-progress', Math.round(percentage));
+            
+            // Custom result message based on score
+            if (percentage >= 80) {
+                resultTitle.textContent = "Genius Level!";
+                resultMessage.textContent = "You're a true expert! Amazing performance!";
+            } else if (percentage >= 60) {
+                resultTitle.textContent = "Impressive!";
+                resultMessage.textContent = "You did exceptionally well on this hard quiz!";
+            } else if (percentage >= 40) {
+                resultTitle.textContent = "Good Effort!";
+                resultMessage.textContent = "Hard level is challenging. You did better than most!";
+            } else {
+                resultTitle.textContent = "Brave Attempt!";
+                resultMessage.textContent = "Hard level is tough. Try the moderate level to build up!";
+            }
+            
+            feather.replace();
+        }
+
+        // Restart quiz
+        restartBtn.addEventListener('click', () => {
+            resultsContainer.classList.add('hidden');
+            questionContainer.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            showQuestion();
+        });
+
+        // Go back to home
+        homeBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // Start the quiz when page loads
+        document.addEventListener('DOMContentLoaded', startQuiz);
+    </script>
+    <script>AOS.init();</script>
+    <script>feather.replace();</script>
+</body>
+</html>

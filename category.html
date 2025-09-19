@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Challenge - Choose Your Level</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .category-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-4xl mx-auto">
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden" data-aos="fade-up">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-center relative">
+                <div class="absolute top-4 right-4">
+                    <div class="bg-white bg-opacity-20 rounded-full p-2">
+                        <i data-feather="help-circle" class="text-white w-5 h-5"></i>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold text-white">Quiz Challenge</h1>
+                <div class="mt-2 flex items-center justify-center">
+                    <i data-feather="award" class="text-yellow-300 mr-2"></i>
+                    <span class="text-white font-medium">Test your knowledge at different levels</span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+                <div class="text-center mb-8">
+                    <h2 class="text-xl text-gray-700">Select a difficulty level to begin your quiz challenge</h2>
+                </div>
+
+                <!-- Category Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Easy Level -->
+                <div class="category-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 text-center border border-blue-200 cursor-pointer" 
+                    onclick="selectDifficulty('easy')" data-aos="fade-right">
+                        <div class="mb-4 bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-md">
+                            <i data-feather="feather" class="text-blue-600 w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-blue-700 mb-2">Easy Level</h3>
+                        <p class="text-gray-600 mb-4 text-sm">Perfect for beginners with straightforward questions</p>
+                        <div class="flex justify-center items-center text-blue-600 text-sm">
+                            <i data-feather="bar-chart" class="w-4 h-4 mr-1"></i>
+                            <span>5 questions • Basic</span>
+                        </div>
+                    </div>
+
+                    <!-- Moderate Level -->
+                    <div class="category-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 text-center border border-purple-200 cursor-pointer" 
+                         onclick="selectDifficulty('moderate')" data-aos="fade-up">
+                        <div class="mb-4 bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-md">
+                            <i data-feather="activity" class="text-purple-600 w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-purple-700 mb-2">Moderate Level</h3>
+                        <p class="text-gray-600 mb-4 text-sm">For those with some knowledge seeking a challenge</p>
+                        <div class="flex justify-center items-center text-purple-600 text-sm">
+                            <i data-feather="bar-chart" class="w-4 h-4 mr-1"></i>
+                            <span>5 questions • Intermediate</span>
+                        </div>
+                    </div>
+
+                    <!-- Hard Level -->
+                    <div class="category-card bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 text-center border border-red-200 cursor-pointer" 
+                         onclick="selectDifficulty('hard')" data-aos="fade-left">
+                        <div class="mb-4 bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-md">
+                            <i data-feather="award" class="text-red-600 w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-red-700 mb-2">Hard Level</h3>
+                        <p class="text-gray-600 mb-4 text-sm">Expert level questions for the truly knowledgeable</p>
+                        <div class="flex justify-center items-center text-red-600 text-sm">
+                            <i data-feather="bar-chart" class="w-4 h-4 mr-1"></i>
+                            <span>5 questions • Advanced</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Progress -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6" data-aos="fade-up">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                        <i data-feather="trending-up" class="w-5 h-5 mr-2 text-blue-500"></i>
+                        Your Progress
+                    </h3>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-blue-600" id="easy-progress">0%</div>
+                            <div class="text-xs text-gray-600">Easy Completed</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-purple-600" id="moderate-progress">0%</div>
+                            <div class="text-xs text-gray-600">Moderate Completed</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-red-600" id="hard-progress">0%</div>
+                            <div class="text-xs text-gray-600">Hard Completed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-6 text-gray-500 text-sm">
+            <p>Challenge yourself with quizzes at different difficulty levels</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize animations and icons
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                once: true
+            });
+            feather.replace();
+            
+
+            
+            // Load progress from localStorage
+            loadProgress();
+        });
+
+        // Store selected difficulty
+        let selectedDifficulty = 'easy';
+
+        // Function to handle difficulty selection
+        function selectDifficulty(level) {
+            selectedDifficulty = level;
+            
+            // Remove any existing selections and pulses
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('ring-2', 'ring-offset-2', 'pulse');
+                card.classList.remove('ring-blue-500', 'ring-purple-500', 'ring-red-500');
+            });
+            
+            // Highlight selected card
+            const selectedCard = document.querySelector(`[onclick="selectDifficulty('${level}')"]`);
+            if (level === 'easy') {
+                selectedCard.classList.add('ring-2', 'ring-offset-2', 'ring-blue-500');
+            } else if (level === 'moderate') {
+                selectedCard.classList.add('ring-2', 'ring-offset-2', 'ring-purple-500');
+            } else {
+                selectedCard.classList.add('ring-2', 'ring-offset-2', 'ring-red-500');
+            }
+            
+            // Redirect to the appropriate quiz page after a short delay
+            setTimeout(function() {
+                window.location.href = `quiz-${selectedDifficulty}.html`;
+            }, 300);
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const easyProgress = localStorage.getItem('easyProgress') || 0;
+            const moderateProgress = localStorage.getItem('moderateProgress') || 0;
+            const hardProgress = localStorage.getItem('hardProgress') || 0;
+            
+            document.getElementById('easy-progress').textContent = `${easyProgress}%`;
+            document.getElementById('moderate-progress').textContent = `${moderateProgress}%`;
+            document.getElementById('hard-progress').textContent = `${hardProgress}%`;
+        }
+    </script>
+</body>
+</html>

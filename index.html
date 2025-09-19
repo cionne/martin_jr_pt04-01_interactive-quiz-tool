@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Challenge - Choose Quiz Type</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .quiz-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-4xl mx-auto">
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden" data-aos="fade-up">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-center relative">
+                <div class="absolute top-4 right-4">
+                    <div class="bg-white bg-opacity-20 rounded-full p-2">
+                        <i data-feather="help-circle" class="text-white w-5 h-5"></i>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold text-white">Quiz Challenge</h1>
+                <div class="mt-2 flex items-center justify-center">
+                    <i data-feather="award" class="text-yellow-300 mr-2"></i>
+                    <span class="text-white font-medium">Test your knowledge with different quiz types</span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+                <div class="text-center mb-8">
+                    <h2 class="text-xl text-gray-700">Select a quiz type to begin your challenge</h2>
+                </div>
+
+                <!-- Quiz Type Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Fill in the Blanks -->
+                    <div class="quiz-card bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center border border-green-200 cursor-pointer" 
+                         onclick="selectQuizType('fill-blanks')" data-aos="fade-right">
+                        <div class="mb-4 bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-md">
+                            <i data-feather="edit-3" class="text-green-600 w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-green-700 mb-2">Fill in the Blanks</h3>
+                        <p class="text-gray-600 mb-4 text-sm">Complete sentences by filling in missing words</p>
+                        <div class="flex justify-center items-center text-green-600 text-sm">
+                            <i data-feather="clock" class="w-4 h-4 mr-1"></i>
+                            <span>10 questions • Vocabulary Focus</span>
+                        </div>
+                    </div>
+
+                    <!-- Multiple Choice -->
+                    <div class="quiz-card bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 text-center border border-orange-200 cursor-pointer" 
+                         onclick="selectQuizType('multiple-choice')" data-aos="fade-left">
+                        <div class="mb-4 bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-md">
+                            <i data-feather="check-square" class="text-orange-600 w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-orange-700 mb-2">Multiple Choice</h3>
+                        <p class="text-gray-600 mb-4 text-sm">Select the correct answer from several options</p>
+                        <div class="flex justify-center items-center text-orange-600 text-sm">
+                            <i data-feather="clock" class="w-4 h-4 mr-1"></i>
+                            <span>3 levels • Comprehensive</span>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <!-- User Progress -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6" data-aos="fade-up">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                        <i data-feather="trending-up" class="w-5 h-5 mr-2 text-blue-500"></i>
+                        Your Progress
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-green-600" id="fill-blanks-progress">0%</div>
+                            <div class="text-xs text-gray-600">Fill in the Blanks</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-orange-600" id="multiple-choice-progress">0%</div>
+                            <div class="text-xs text-gray-600">Multiple Choice</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-6 text-gray-500 text-sm">
+            <p>Challenge yourself with different types of quizzes</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize animations and icons
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                once: true
+            });
+            feather.replace();
+            
+            // Load progress from localStorage
+            loadProgress();
+        });
+
+        // Store selected quiz type and difficulty
+        let selectedQuizType = '';
+        let selectedDifficulty = 'easy';
+
+        // Function to handle quiz type selection
+        function selectQuizType(type) {
+            if (type === 'fill-blanks') {
+                window.location.href = 'fillintheblanks.html';
+                return;
+            } else if (type === 'multiple-choice') {
+                window.location.href = 'category.html';
+                return;
+            }
+            // ...existing code for highlighting and difficulty selection if needed...
+        }
+
+        // Function to handle difficulty selection
+        function selectDifficulty(level) {
+            selectedDifficulty = level;
+            
+            // Remove any existing selections
+            document.querySelectorAll('.difficulty-option').forEach(option => {
+                option.classList.remove('ring-2', 'ring-offset-2');
+                option.classList.remove('ring-blue-500', 'ring-purple-500', 'ring-red-500');
+            });
+            
+            // Highlight selected difficulty
+            const selectedOption = document.querySelector(`[onclick="selectDifficulty('${level}')"]`);
+            if (level === 'easy') {
+                selectedOption.classList.add('ring-2', 'ring-offset-2', 'ring-blue-500');
+            } else if (level === 'moderate') {
+                selectedOption.classList.add('ring-2', 'ring-offset-2', 'ring-purple-500');
+            } else {
+                selectedOption.classList.add('ring-2', 'ring-offset-2', 'ring-red-500');
+            }
+            
+            // Redirect to the appropriate quiz page after a short delay
+            setTimeout(function() {
+                window.location.href = `quiz-${selectedQuizType}-${selectedDifficulty}.html`;
+            }, 500);
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            // Fill in the Blanks progress (from fillintheblanks.html)
+            // fillintheblanks.html saves as 'easyProgress' (see previous code)
+            const fillBlanksProgress = localStorage.getItem('easyProgress') || 0;
+
+            // Multiple Choice progress: average of quiz-easy, quiz-moderate, quiz-hard (33% each)
+            const easy = parseInt(localStorage.getItem('quiz-easy-progress') || '0', 10);
+            const moderate = parseInt(localStorage.getItem('quiz-moderate-progress') || '0', 10);
+            const hard = parseInt(localStorage.getItem('quiz-hard-progress') || '0', 10);
+            // Each is 1/3 of the total progress
+            const multipleChoiceProgress = Math.round((easy + moderate + hard) / 3);
+
+            document.getElementById('fill-blanks-progress').textContent = `${fillBlanksProgress}%`;
+            document.getElementById('multiple-choice-progress').textContent = `${multipleChoiceProgress}%`;
+        }
+    </script>
+</body>
+</html>
