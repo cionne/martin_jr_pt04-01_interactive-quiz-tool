@@ -172,10 +172,10 @@
 
         // Load progress from localStorage
         function loadProgress() {
-            const easyProgress = localStorage.getItem('easyProgress') || 0;
-            const moderateProgress = localStorage.getItem('moderateProgress') || 0;
-            const hardProgress = localStorage.getItem('hardProgress') || 0;
-            
+            const easyProgress = localStorage.getItem('quiz-easy-progress') || 0;
+            const moderateProgress = localStorage.getItem('quiz-moderate-progress') || 0;
+            const hardProgress = localStorage.getItem('quiz-hard-progress') || 0;
+
             document.getElementById('easy-progress').textContent = `${easyProgress}%`;
             document.getElementById('moderate-progress').textContent = `${moderateProgress}%`;
             document.getElementById('hard-progress').textContent = `${hardProgress}%`;
